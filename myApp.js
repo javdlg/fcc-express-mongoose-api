@@ -21,31 +21,64 @@ const personSchema = new mongoose.Schema({
 });
 
 const Person = mongoose.model('Person', personSchema);
-
+//Function to create and save a person
 const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+  const person = new Person({
+    name: "Javier",
+    age: 30,
+    favoriteFoods: ["milanesa", "empanada"],
+  });
+
+  person.save((err, data) => {
+    if (err) return done(err);
+    return done(null, data);
+  });
 };
 
+const arrayOfPeople = [
+  { name: "Alicia", age: 25, favoriteFoods: ["pizza", "hamburguesa"] },
+  { name: "Esteban", age: 33, favoriteFoods: ["sushi", "pasta"] },
+  { name: "Maria", age: 27, favoriteFoods: ["ensalada", "pollo al horno"] },
+];
+//Function to create many people
 const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+  Person.create(arrayOfPeople, (err, people) => {
+    if (err) return done(err); //Handle the error by passing to the done function
+    done(null, people);
+  });
 };
 
 const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+  Person.find({ name: personName }, (err, people) => {
+    if (err) return done(err);
+    done(null, people);
+  });
 };
 
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({ favoriteFoods: food }, (err, person) => {
+    if (err) return done(err);
+    done(null, person);
+  });
 };
 
 const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findById(personId, (err, person) => {
+    if (err) return done(err);
+    done(null, person);
+  });
 };
 
 const findEditThenSave = (personId, done) => {
-  const foodToAdd = "hamburger";
-
-  done(null /*, data*/);
+  Person.findById(personId, (err, person) => {
+    if (err) return done(err);
+    person.favoriteFoods.push("hamburger");//Add hamburger to array
+    person.markModified('favoriteFoods');//Mark the array as modified
+    person.save((err, updatedPerson) => {
+      if (err) return done(err);
+      done(null, updatedPerson);//Save the updated document
+    });
+  });
 };
 
 const findAndUpdate = (personName, done) => {
